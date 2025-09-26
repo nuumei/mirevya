@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mirevya - Image & SEO Batch Builder</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-950 text-white">
+
+    <div id="root" class="min-h-screen flex flex-col lg:flex-row">
+        <!-- Left Input Panel -->
+        <div class="w-full lg:w-1/3 p-4 border-r border-gray-800 lg:h-screen lg:overflow-y-auto">
+            <h1 class="text-2xl font-bold mb-4 text-center">Mirevya</h1>
+            <div id="status-message" class="hidden mb-4 p-3 rounded-lg text-sm text-center"></div>
+            <div class="space-y-6">
+                <!-- Project & Collection -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-1">โปรเจกต์</label>
+                    <input type="text" id="projectId" class="w-full p-2 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:ring focus:ring-yellow-500" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-1">คอลเลกชัน</label>
+                    <input type="text" id="collection" class="w-full p-2 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:ring focus:ring-yellow-500" />
+                </div>
+
+                <!-- Core Inputs -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-1">แนวคิด / ธีม</label>
+                    <textarea id="concept" class="w-full p-2 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:ring focus:ring-yellow-500" rows="3"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-1">รูปแบบสไตล์</label>
+                    <select id="style" class="w-full p-2 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:ring focus:ring-yellow-500">
+                        <option value="Mirevya Lumora">Mirevya Lumora</option>
+                        <option value="Neon Cyberpunk">Neon Cyberpunk</option>
+                        <option value="Fairy Pastel">Fairy Pastel</option>
+                        <option value="Crystal Runway">Crystal Runway</option>
+                        <option value="Custom">Custom</option>
+                    </select>
+                </div>
+                <div>
+                    <div class="flex items-center mb-2">
+                        <input type="checkbox" id="aiCensorToggle" class="rounded-full text-yellow-500 focus:ring-yellow-500 bg-gray-800 border-gray-700" />
+                        <label for="aiCensorToggle" class="ml-2 text-sm font-medium text-gray-400">เปิดใช้งาน AI Keyword Censor</label>
+                    </div>
+                    <label class="block text-sm font-medium text-gray-400 mb-1">คำที่ต้องการคัดออก (คั่นด้วยคอมมา)</label>
+                    <input type="text" id="excludeKeywords" class="w-full p-2 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:ring focus:ring-yellow-500" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-1">จำนวนตัวแปร</label>
+                    <input type="number" id="variations" value="10" class="w-full p-2 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:ring focus:ring-yellow-500" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-1">จำนวนแท็ก</label>
+                    <input type="number" id="tagsCount" value="10" class="w-full p-2 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:ring focus:ring-yellow-500" />
+                </div>
+
+                 <!-- Reference Images -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-1">รูปภาพตัวอย่าง (0-3)</label>
+                    <input type="file" id="referenceImages" multiple accept="image/*" class="w-full text-sm text-gray-500" />
+                    <div id="image-previews" class="flex space-x-2 mt-2"></div>
+                </div>
+
+                <!-- Target Platforms -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-1">แพลตฟอร์มเป้าหมาย</label>
+                    <div id="platforms-container" class="flex flex-wrap gap-2">
+                        <div class="flex items-center"><input type="checkbox" id="redbubble" value="redbubble" checked class="rounded-full text-yellow-500 focus:ring-yellow-500 bg-gray-800 border-gray-700" /><label for="redbubble" class="ml-2 text-sm text-gray-300">Redbubble</label></div>
+                        <div class="flex items-center"><input type="checkbox" id="etsy" value="etsy" class="rounded-full text-yellow-500 focus:ring-yellow-500 bg-gray-800 border-gray-700" /><label for="etsy" class="ml-2 text-sm text-gray-300">Etsy</label></div>
+                        <div class="flex items-center"><input type="checkbox" id="amazon" value="amazon" class="rounded-full text-yellow-500 focus:ring-yellow-500 bg-gray-800 border-gray-700" /><label for="amazon" class="ml-2 text-sm text-gray-300">Amazon Merch</label></div>
+                        <div class="flex items-center"><input type="checkbox" id="teepublic" value="teepublic" class="rounded-full text-yellow-500 focus:ring-yellow-500 bg-gray-800 border-gray-700" /><label for="teepublic" class="ml-2 text-sm text-gray-300">Teepublic</label></div>
+                    </div>
+                </div>
+
+                <!-- Output Languages -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-1">ภาษาที่ต้องการ</label>
+                    <div id="languages-container" class="flex flex-wrap gap-2">
+                        <div class="flex items-center"><input type="checkbox" id="en" value="en" checked class="rounded-full text-yellow-500 focus:ring-yellow-500 bg-gray-800 border-gray-700" /><label for="en" class="ml-2 text-sm text-gray-300">EN</label></div>
+                        <div class="flex items-center"><input type="checkbox" id="de" value="de" class="rounded-full text-yellow-500 focus:ring-yellow-500 bg-gray-800 border-gray-700" /><label for="de" class="ml-2 text-sm text-gray-300">DE</label></div>
+                        <div class="flex items-center"><input type="checkbox" id="fr" value="fr" class="rounded-full text-yellow-500 focus:ring-yellow-500 bg-gray-800 border-gray-700" /><label for="fr" class="ml-2 text-sm text-gray-300">FR</label></div>
+                        <div class="flex items-center"><input type="checkbox" id="es" value="es" class="rounded-full text-yellow-500 focus:ring-yellow-500 bg-gray-800 border-gray-700" /><label for="es" class="ml-2 text-sm text-gray-300">ES</label></div>
+                    </div>
+                </div>
+
+                <!-- Image Size -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-1">ขนาดรูปภาพ</label>
+                    <select id="imageSize" class="w-full p-2 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:ring focus:ring-yellow-500">
+                        <option value="1024x1024">1024x1024</option>
+                        <option value="2048x2048">2048x2048</option>
+                    </select>
+                </div>
+
+                <!-- Rendering Mode -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-1">โหมดการสร้าง</label>
+                    <div class="flex space-x-4">
+                        <label class="flex items-center text-sm text-gray-300">
+                            <input type="radio" name="renderingMode" value="Manual" checked class="rounded-full text-yellow-500 focus:ring-yellow-500 bg-gray-800 border-gray-700" />
+                            <span class="ml-2">Manual</span>
+                        </label>
+                        <label class="flex items-center text-sm text-gray-300">
+                            <input type="radio" name="renderingMode" value="API" class="rounded-full text-yellow-500 focus:ring-yellow-500 bg-gray-800 border-gray-700" />
+                            <span class="ml-2">API</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="mt-8 space-y-4">
+                <button id="generatePromptsBtn" class="w-full bg-yellow-600 hover:bg-yellow-700 text-white py-2 px-4 rounded-lg font-bold">
+                    สร้าง Prompt
+                </button>
+                <button id="generateSeoBtn" class="w-full bg-yellow-600 hover:bg-yellow-700 text-white py-2 px-4 rounded-lg font-bold">
+                    สร้าง SEO
+                </button>
+                <button id="renderAllBtn" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-lg font-bold hidden">
+                    สร้างรูปภาพทั้งหมด
+                </button>
+                <button id="quickQABtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg font-bold">
+                    Quick QA
+                </button>
+                <button id="exportCsvBtn" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg font-bold">
+                    ส่งออก (CSV)
+                </button>
+                <button id="saveToFirestoreBtn" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg font-bold">
+                    บันทึกลง Firestore
+                </button>
+            </div>
+        </div>
+
+        <!-- Right Tabbed View -->
+        <div class="w-full lg:w-2/3 p-4">
+            <div class="flex border-b border-gray-800 mb-4">
+                <button class="tab-button py-2 px-4 font-bold text-yellow-400 border-b-2 border-yellow-400" data-tab="prompts">Prompts</button>
+                <button class="tab-button py-2 px-4 font-bold text-gray-400 hover:text-white" data-tab="images">รูปภาพ</button>
+                <button class="tab-button py-2 px-4 font-bold text-gray-400 hover:text-white" data-tab="seo">SEO</button>
+                <button class="tab-button py-2 px-4 font-bold text-gray-400 hover:text-white" data-tab="data">ข้อมูล</button>
+            </div>
+            <div id="tab-content" class="lg:h-[calc(100vh-10rem)] lg:overflow-y-auto">
+                <div id="prompts-content" class="tab-pane">
+                    <p class="text-gray-400">กรุณาสร้าง Prompt เพื่อดูที่นี่</p>
+                </div>
+                <div id="images-content" class="tab-pane hidden">
+                    <p class="text-gray-400">รูปภาพจะปรากฏที่นี่หลังจากสร้าง</p>
+                </div>
+                <div id="seo-content" class="tab-pane hidden">
+                    <p class="text-gray-400">กรุณาสร้าง SEO เพื่อดูที่นี่</p>
+                </div>
+                <div id="data-content" class="tab-pane hidden">
+                    <p class="text-gray-400">ข้อมูลจะปรากฏที่นี่หลังจากสร้าง</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Global variables
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        let app, auth, db, userId;
+        let generatedData = { prompts: [], seoData: {}, images: [] };
+
+        const initFirebase = async () => {
+            if (Object.keys(firebaseConfig).length > 0) {
+                try {
+                    app = initializeApp(firebaseConfig);
+                    auth = getAuth(app);
+                    db = getFirestore(app);
+                    onAuthStateChanged(auth, async (user) => {
+                        if (user) {
+                            userId = user.uid;
+                        } else {
+                            if (initialAuthToken) {
+                                await signInWithCustomToken(auth, initialAuthToken);
+                            } else {
+                                await signInAnonymously(auth);
+                            }
+                            userId = auth.currentUser?.uid;
+                        }
+                    });
+                } catch (e) {
+                    console.error("Firebase initialization failed:", e);
+                }
+            } else {
+                console.warn("Firebase config is not available. Firestore features will be disabled.");
+            }
+        };
+        initFirebase();
+
+        // UI Elements
+        const projectIdInput = document.getElementById('projectId');
+        const collectionInput = document.getElementById('collection');
+        const conceptInput = document.getElementById('concept');
+        const styleSelect = document.getElementById('style');
+        const aiCensorToggle = document.getElementById('aiCensorToggle');
+        const excludeKeywordsInput = document.getElementById('excludeKeywords');
+        const variationsInput = document.getElementById('variations');
+        const tagsCountInput = document.getElementById('tagsCount');
+        const referenceImagesInput = document.getElementById('referenceImages');
+        const imagePreviewsContainer = document.getElementById('image-previews');
+        const platformsContainer = document.getElementById('platforms-container');
+        const languagesContainer = document.getElementById('languages-container');
+        const imageSizeSelect = document.getElementById('imageSize');
+        const generatePromptsBtn = document.getElementById('generatePromptsBtn');
+        const generateSeoBtn = document.getElementById('generateSeoBtn');
+        const renderAllBtn = document.getElementById('renderAllBtn');
+        const quickQABtn = document.getElementById('quickQABtn');
+        const exportCsvBtn = document.getElementById('exportCsvBtn');
+        const saveToFirestoreBtn = document.getElementById('saveToFirestoreBtn');
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const tabPanes = document.querySelectorAll('.tab-pane');
+        const statusMessageDiv = document.getElementById('status-message');
+
+        const showMessage = (message, type = 'info') => {
+            statusMessageDiv.textContent = message;
+            statusMessageDiv.className = 'mb-4 p-3 rounded-lg text-sm text-center';
+            if (type === 'success') {
+                statusMessageDiv.classList.add('bg-green-600', 'text-white');
+            } else if (type === 'error') {
+                statusMessageDiv.classList.add('bg-red-600', 'text-white');
+            } else {
+                statusMessageDiv.classList.add('bg-yellow-600', 'text-white');
+            }
+            statusMessageDiv.classList.remove('hidden');
+        };
+
+        const getSelectedCheckboxes = (containerId) => {
+            return Array.from(document.getElementById(containerId).querySelectorAll('input[type="checkbox"]:checked')).map(el => el.value);
+        };
+        
+        const generatePromptsWithAI = async () => {
+            const concept = conceptInput.value.trim();
+            const style = styleSelect.value;
+            const variations = parseInt(variationsInput.value, 10);
+            
+            // Validation and visual feedback
+            conceptInput.classList.remove('border-red-500');
+            if (!concept || variations < 1) {
+                if (!concept) {
+                    conceptInput.classList.add('border-red-500');
+                }
+                showMessage("กรุณาระบุแนวคิดและจำนวนตัวแปรที่ถูกต้อง", 'error');
+                return;
+            }
+
+            const prompt = `Act as a creative AI prompt engineer. Generate ${variations} different, highly creative, and print-ready vector art prompts for a design featuring a "${concept}" in a "${style}" style. Each prompt should be a complete sentence and include specific visual details like "clean bold vector line art", "ultra sharp edges", "high detail", "centered composition". Also, provide a single, universal negative prompt to avoid unwanted artifacts. The response must be a JSON object array.`;
+            const systemPrompt = "You are a world-class AI prompt engineer. You provide a list of highly detailed and creative prompts in a JSON format.";
+            const apiKey = "";
+            const apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=" + apiKey;
+
+            try {
+                generatePromptsBtn.textContent = 'กำลังสร้าง...';
+                generatePromptsBtn.disabled = true;
+                showMessage("กำลังสร้าง Prompt... โปรดรอสักครู่", 'info');
+
+                const payload = {
+                    contents: [{ parts: [{ text: prompt }] }],
+                    generationConfig: {
+                        responseMimeType: "application/json",
+                        responseSchema: {
+                            type: "ARRAY",
+                            items: {
+                                type: "OBJECT",
+                                properties: {
+                                    "prompt": { "type": "STRING" },
+                                    "negative_prompt": { "type": "STRING" }
+                                }
+                            }
+                        }
+                    },
+                    systemInstruction: { parts: [{ text: systemPrompt }] }
+                };
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+                
+                const jsonText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (jsonText) {
+                    generatedData.prompts = JSON.parse(jsonText);
+                    renderPrompts();
+                    showMessage("สร้าง Prompt สำเร็จ!", 'success');
+                } else {
+                    throw new Error("API did not return a valid JSON response.");
+                }
+            } catch (e) {
+                showMessage("เกิดข้อผิดพลาดในการสร้าง Prompt: " + e.message, 'error');
+                console.error("Error generating prompts:", e);
+            } finally {
+                generatePromptsBtn.textContent = 'สร้าง Prompt';
+                generatePromptsBtn.disabled = false;
+            }
+        };
+
+        const generateSeoWithAI = async () => {
+            const concept = conceptInput.value.trim();
+            const style = styleSelect.value;
+            let excludeKeywords = excludeKeywordsInput.value.trim().split(',').map(k => k.trim()).filter(Boolean);
+            const platforms = getSelectedCheckboxes('platforms-container');
+            const languages = getSelectedCheckboxes('languages-container');
+            const tagsCount = parseInt(tagsCountInput.value, 10);
+
+            let isValid = true;
+            conceptInput.classList.remove('border-red-500');
+            platformsContainer.classList.remove('border', 'border-red-500', 'p-2', 'rounded-lg');
+            languagesContainer.classList.remove('border', 'border-red-500', 'p-2', 'rounded-lg');
+            tagsCountInput.classList.remove('border-red-500');
+
+            if (!concept) {
+                conceptInput.classList.add('border-red-500');
+                isValid = false;
+            }
+            if (platforms.length === 0) {
+                platformsContainer.classList.add('border', 'border-red-500', 'p-2', 'rounded-lg');
+                isValid = false;
+            }
+            if (languages.length === 0) {
+                languagesContainer.classList.add('border', 'border-red-500', 'p-2', 'rounded-lg');
+                isValid = false;
+            }
+            if (tagsCount < 1) {
+                tagsCountInput.classList.add('border-red-500');
+                isValid = false;
+            }
+            
+            if (!isValid) {
+                showMessage("กรุณากรอกข้อมูลในช่องที่ไฮไลท์ด้วยสีแดงให้ครบถ้วน", 'error');
+                return;
+            }
+            
+            if (aiCensorToggle.checked) {
+                const aiCensoredWords = await generateCensoredWords(concept);
+                excludeKeywords = excludeKeywords.concat(aiCensoredWords);
+            }
+            
+            const prompt = `Act as a world-class e-commerce SEO specialist, market researcher, and keyword analyst. Your goal is to generate high-quality, actionable, and ready-to-use SEO content that identifies and targets an untapped search niche (SERP niche) for a print-on-demand design.
+
+            The design features a "${concept}" in a "${style}" style.
+
+            Your task is to:
+            1. Identify a specific, unique, and marketable search niche for this design.
+            2. Generate a unique and original title (for a product listing) that is not copyrighted and avoids common, saturated keywords.
+            3. Generate ${tagsCount} high-quality, long-tail tags that are not spammy, not copyrighted, and directly related to the identified niche and design.
+            4. Write a long, descriptive, and engaging description that explains the design and its appeal to the target audience.
+            5. Ensure the content is tailored for the following platforms and languages: ${platforms.join(', ')} and ${languages.join(', ')}.
+            6. Avoid using the following keywords: ${excludeKeywords.join(', ')}.
+
+            Format the response strictly as plain text, using the following structure for each platform-language pair:
+            ---
+            Niche: [Identified Niche]
+            Platform: [Platform Name]
+            Language: [Language Code]
+            Title: [Generated Title]
+            Tags: [Comma-separated tags]
+            Description: [Generated Description]
+            ---
+            Generate a block for each requested combination. Do not include any extra text.`;
+
+            const systemPrompt = "You are a world-class SEO strategist who identifies profitable niches and creates high-quality, non-spam SEO content. Your output is clean, structured, and ready for deployment.";
+            const apiKey = "";
+            const apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=" + apiKey;
+
+            const makeApiCall = async (retries = 3) => {
+                try {
+                    const payload = {
+                        contents: [{ parts: [{ text: prompt }] }],
+                        systemInstruction: { parts: [{ text: systemPrompt }] }
+                    };
+
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const result = await response.json();
+                    
+                    const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                    if (text) {
+                        return text;
+                    } else {
+                        throw new Error("API did not return a valid text response.");
+                    }
+                } catch (e) {
+                    if (retries > 0) {
+                        console.warn(`API call failed. Retrying... (${retries - 1} retries left)`);
+                        await new Promise(res => setTimeout(res, 2000));
+                        return makeApiCall(retries - 1);
+                    } else {
+                        throw e;
+                    }
+                }
+            };
+            
+            generateSeoBtn.textContent = 'กำลังสร้าง...';
+            generateSeoBtn.disabled = true;
+            showMessage("กำลังสร้าง SEO... โปรดรอสักครู่", 'info');
+            
+            try {
+                const rawText = await makeApiCall();
+                
+                // Parsing logic for the new text format
+                generatedData.seoData = {};
+                const blocks = rawText.split('---').map(s => s.trim()).filter(Boolean);
+
+                blocks.forEach(block => {
+                    const lines = block.split('\n').map(s => s.trim()).filter(Boolean);
+                    if (lines.length >= 5) {
+                        const nicheLine = lines.find(line => line.startsWith('Niche:'));
+                        const platformLine = lines.find(line => line.startsWith('Platform:'));
+                        const langLine = lines.find(line => line.startsWith('Language:'));
+                        const titleLine = lines.find(line => line.startsWith('Title:'));
+                        const tagsLine = lines.find(line => line.startsWith('Tags:'));
+                        const descriptionLine = lines.find(line => line.startsWith('Description:'));
+
+                        if (nicheLine && platformLine && langLine && titleLine && tagsLine && descriptionLine) {
+                            const niche = nicheLine.replace('Niche:', '').trim();
+                            const platform = platformLine.replace('Platform:', '').trim();
+                            const lang = langLine.replace('Language:', '').trim();
+                            const title = titleLine.replace('Title:', '').trim();
+                            const tags = tagsLine.replace('Tags:', '').trim();
+                            const description = descriptionLine.replace('Description:', '').trim();
+
+                            if (!generatedData.seoData[platform]) {
+                                generatedData.seoData[platform] = {};
+                            }
+                            generatedData.seoData[platform][lang] = { niche, title, tags, description };
+                        }
+                    }
+                });
+
+                renderSeo();
+                renderData();
+                showMessage("สร้าง SEO สำเร็จ!", 'success');
+            } catch (e) {
+                showMessage("เกิดข้อผิดพลาดในการประมวลผลข้อมูล SEO ที่ได้รับ กรุณาลองใหม่อีกครั้ง", 'error');
+                console.error("Error generating or parsing SEO:", e);
+            } finally {
+                generateSeoBtn.textContent = 'สร้าง SEO';
+                generateSeoBtn.disabled = false;
+            }
+        };
+
+        const generateCensoredWords = async (concept) => {
+            const prompt = `Based on the concept "${concept}", generate a list of general keywords that are likely to be copyrighted, trademarked, or contain vulgar, hateful, or violent language. The response must be a JSON object containing a single array of strings named "keywords". Do not include any other text.`;
+            const systemPrompt = "You are a professional keyword auditor. Your task is to identify and list potentially problematic keywords for e-commerce and print-on-demand businesses.";
+            const apiKey = "";
+            const apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=" + apiKey;
+
+            try {
+                showMessage("AI กำลังวิเคราะห์คำที่ไม่เหมาะสม... โปรดรอสักครู่", 'info');
+                const payload = {
+                    contents: [{ parts: [{ text: prompt }] }],
+                    generationConfig: {
+                        responseMimeType: "application/json",
+                        responseSchema: {
+                            type: "OBJECT",
+                            properties: {
+                                "keywords": {
+                                    "type": "ARRAY",
+                                    "items": { "type": "STRING" }
+                                }
+                            }
+                        }
+                    },
+                    systemInstruction: { parts: [{ text: systemPrompt }] }
+                };
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+                
+                const jsonText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (jsonText) {
+                    const parsed = JSON.parse(jsonText);
+                    return parsed.keywords || [];
+                }
+            } catch (e) {
+                console.error("Error generating censored words:", e);
+            }
+            return [];
+        };
+
+        const renderImages = async () => {
+            if (generatedData.prompts.length === 0) {
+                showMessage("กรุณาสร้าง Prompt ก่อน", 'error');
+                return;
+            }
+            
+            const imagesContent = document.getElementById('images-content');
+            imagesContent.innerHTML = '';
+            imagesContent.innerHTML += '<div class="flex flex-col items-center justify-center text-center"><div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-yellow-500"></div><p class="mt-4 text-gray-400">กำลังสร้างรูปภาพ... โปรดรอสักครู่</p></div>';
+            
+            generatedData.images = [];
+            
+            for (const promptData of generatedData.prompts) {
+                try {
+                    const payload = { 
+                        instances: { prompt: promptData.prompt }, 
+                        parameters: { "sampleCount": 1 } 
+                    };
+                    const apiKey = "";
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${apiKey}`;
+                    
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    
+                    const result = await response.json();
+                    if (result.predictions && result.predictions.length > 0 && result.predictions[0].bytesBase64Encoded) {
+                        const imageUrl = `data:image/png;base64,${result.predictions[0].bytesBase64Encoded}`;
+                        generatedData.images.push(imageUrl);
+                        renderImage(imageUrl);
+                    } else {
+                        throw new Error("API did not return a valid image.");
+                    }
+                } catch (e) {
+                    console.error("Error generating image:", e);
+                }
+            }
+            const loadingIndicator = imagesContent.querySelector('.flex');
+            if(loadingIndicator) loadingIndicator.remove();
+        };
+
+        const renderImage = (imageUrl) => {
+            const imagesContent = document.getElementById('images-content');
+            const imgDiv = document.createElement('div');
+            imgDiv.className = 'w-full md:w-1/2 lg:w-1/3 p-2 flex flex-col items-center';
+            
+            const img = document.createElement('img');
+            img.src = imageUrl;
+            img.className = 'w-full h-auto rounded-lg shadow-lg';
+            
+            const downloadBtn = document.createElement('button');
+            downloadBtn.className = 'mt-2 bg-yellow-600 hover:bg-yellow-700 text-white py-1 px-3 rounded-lg text-sm font-bold';
+            downloadBtn.textContent = 'ดาวน์โหลดรูปภาพ';
+            downloadBtn.onclick = () => {
+                const link = document.createElement('a');
+                link.href = imageUrl;
+                link.download = 'mirevya_image.png';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            };
+            
+            imgDiv.appendChild(img);
+            imgDiv.appendChild(downloadBtn);
+            imagesContent.appendChild(imgDiv);
+        };
+
+        const exportCsv = () => {
+            const csvRows = [];
+            const headers = ["project", "collection", "concept", "style", "variation_no", "prompt", "negative_prompt"];
+            const platforms = Object.keys(generatedData.seoData);
+            const languages = getSelectedCheckboxes('languages-container');
+
+            platforms.forEach(platform => {
+                languages.forEach(lang => {
+                    headers.push(`${platform}_${lang}_niche`, `${platform}_${lang}_title`, `${platform}_${lang}_tags`, `${platform}_${lang}_description`);
+                });
+            });
+            csvRows.push(headers.join(','));
+
+            for (let i = 0; i < generatedData.prompts.length; i++) {
+                const row = [
+                    projectIdInput.value,
+                    collectionInput.value,
+                    conceptInput.value,
+                    styleSelect.value,
+                    i + 1,
+                    `"${generatedData.prompts[i]?.prompt?.replace(/"/g, '""')}"`,
+                    `"${generatedData.prompts[i]?.negative_prompt?.replace(/"/g, '""')}"`
+                ];
+
+                platforms.forEach(platform => {
+                    languages.forEach(lang => {
+                        const seo = generatedData.seoData?.[platform]?.[lang];
+                        if (seo) {
+                            row.push(`"${seo.niche?.replace(/"/g, '""')}"`, `"${seo.title?.replace(/"/g, '""')}"`, `"${seo.tags?.replace(/"/g, '""')}"`, `"${seo.description?.replace(/"/g, '""')}"`);
+                        } else {
+                            row.push("", "", "", "");
+                        }
+                    });
+                });
+                csvRows.push(row.join(','));
+            }
+
+            const csvString = csvRows.join('\n');
+            const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.setAttribute('download', 'mirevya_export.csv');
+            document.body.appendChild(link);
+            document.body.removeChild(link);
+        };
+
+        const saveToFirestore = async () => {
+            if (!db || !userId) {
+                showMessage("ไม่สามารถบันทึกได้: Firebase ไม่พร้อมใช้งานหรือไม่ได้ลงชื่อเข้าใช้", 'error');
+                return;
+            }
+
+            try {
+                const data = {
+                    projectId: projectIdInput.value,
+                    collection: collectionInput.value,
+                    concept: conceptInput.value,
+                    style: styleSelect.value,
+                    variations: parseInt(variationsInput.value, 10),
+                    tagsCount: parseInt(tagsCountInput.value, 10),
+                    platforms: getSelectedCheckboxes('platforms-container'),
+                    languages: getSelectedCheckboxes('languages-container'),
+                    prompts: generatedData.prompts,
+                    seoData: generatedData.seoData,
+                    images: generatedData.images,
+                    timestamp: new Date()
+                };
+                
+                const collectionPath = `/artifacts/${appId}/users/${userId}/mirevya_data`;
+                const docRef = doc(db, collectionPath, 'data');
+                await setDoc(docRef, data, { merge: true });
+                showMessage("บันทึกข้อมูลลง Firestore สำเร็จ!", 'success');
+            } catch (e) {
+                showMessage("เกิดข้อผิดพลาดในการบันทึกเอกสาร: " + e.message, 'error');
+                console.error("Error saving document:", e);
+            }
+        };
+
+        const quickQA = () => {
+            const requiredFields = {
+                'projectId': 'โปรเจกต์',
+                'collection': 'คอลเลกชัน',
+                'concept': 'แนวคิด / ธีม'
+            };
+            let missingFields = [];
+            for (const key in requiredFields) {
+                if (!document.getElementById(key).value) {
+                    missingFields.push(requiredFields[key]);
+                }
+            }
+            if (missingFields.length > 0) {
+                showMessage(`กรุณากรอกข้อมูลในช่องต่อไปนี้ให้ครบถ้วนก่อน: ${missingFields.join(', ')}`, 'error');
+                return;
+            }
+            showMessage("ข้อมูลครบถ้วนพร้อมใช้งาน!", 'success');
+        };
+
+        // UI Rendering Functions
+        const renderPrompts = () => {
+            const promptsContent = document.getElementById('prompts-content');
+            promptsContent.innerHTML = '';
+            if (generatedData.prompts.length === 0) {
+                promptsContent.innerHTML = '<p class="text-gray-400">กรุณาสร้าง Prompt เพื่อดูที่นี่</p>';
+                return;
+            }
+            generatedData.prompts.forEach((p, index) => {
+                const promptHtml = `
+                    <div class="bg-gray-800 p-4 rounded-lg shadow-inner mb-4">
+                        <h4 class="text-sm font-semibold text-gray-400">ตัวแปร ${index + 1}</h4>
+                        <p class="text-sm text-yellow-200 mt-2">Prompt:</p>
+                        <p class="text-xs text-white break-words">${p.prompt}</p>
+                        <p class="text-sm text-yellow-200 mt-2">Negative Prompt:</p>
+                        <p class="text-xs text-white break-words">${p.negative_prompt}</p>
+                        <div class="mt-4 flex space-x-2">
+                            <button class="text-xs bg-yellow-600 hover:bg-yellow-700 text-white py-1 px-3 rounded-md" onclick="navigator.clipboard.writeText('${p.prompt.replace(/'/g, "\\'")}');">
+                                คัดลอก Prompt
+                            </button>
+                            <button class="text-xs bg-yellow-600 hover:bg-yellow-700 text-white py-1 px-3 rounded-md" onclick="navigator.clipboard.writeText('${p.negative_prompt.replace(/'/g, "\\'")}');">
+                                คัดลอก Negative
+                            </button>
+                        </div>
+                    </div>
+                `;
+                promptsContent.innerHTML += promptHtml;
+            });
+        };
+
+        const renderSeo = () => {
+            const seoContent = document.getElementById('seo-content');
+            seoContent.innerHTML = '';
+            if (Object.keys(generatedData.seoData).length === 0) {
+                seoContent.innerHTML = '<p class="text-gray-400">กรุณาสร้าง SEO เพื่อดูที่นี่</p>';
+                return;
+            }
+
+            for (const platform in generatedData.seoData) {
+                const platformDiv = document.createElement('div');
+                platformDiv.className = 'bg-gray-800 p-4 rounded-lg shadow-inner mb-4';
+                platformDiv.innerHTML = `<h3 class="text-sm font-semibold text-white capitalize">${platform} SEO</h3>`;
+
+                for (const lang in generatedData.seoData[platform]) {
+                    const seo = generatedData.seoData[platform][lang];
+                    const langDiv = document.createElement('div');
+                    langDiv.className = 'bg-gray-900 p-3 rounded-md mt-2';
+                    langDiv.innerHTML = `
+                        <h4 class="text-xs font-semibold text-gray-400">ภาษา: ${lang.toUpperCase()}</h4>
+                        <p class="text-xs text-yellow-200 mt-1">Niche:</p>
+                        <p class="text-white text-xs break-words">${seo.niche}</p>
+                        <p class="text-xs text-yellow-200 mt-2">หัวข้อ:</p>
+                        <p class="text-white text-xs break-words">${seo.title}</p>
+                        <p class="text-xs text-yellow-200 mt-2">แท็ก:</p>
+                        <p class="text-white text-xs break-words">${seo.tags}</p>
+                        <p class="text-xs text-yellow-200 mt-2">คำอธิบาย:</p>
+                        <p class="text-white text-xs break-words">${seo.description}</p>
+                        <div class="mt-4 flex space-x-2">
+                            <button class="text-xs bg-yellow-600 hover:bg-yellow-700 text-white py-1 px-3 rounded-md" onclick="navigator.clipboard.writeText('${seo.title.replace(/'/g, "\\'")}');">
+                                คัดลอกหัวข้อ
+                            </button>
+                            <button class="text-xs bg-yellow-600 hover:bg-yellow-700 text-white py-1 px-3 rounded-md" onclick="navigator.clipboard.writeText('${seo.tags.replace(/'/g, "\\'")}');">
+                                คัดลอกแท็ก
+                            </button>
+                            <button class="text-xs bg-yellow-600 hover:bg-yellow-700 text-white py-1 px-3 rounded-md" onclick="navigator.clipboard.writeText('${seo.description.replace(/'/g, "\\'")}');">
+                                คัดลอกคำอธิบาย
+                            </button>
+                        </div>
+                    `;
+                    platformDiv.appendChild(langDiv);
+                }
+                seoContent.appendChild(platformDiv);
+            }
+        };
+
+        const renderData = () => {
+            const dataContent = document.getElementById('data-content');
+            const data = {
+                projectId: projectIdInput.value,
+                collection: collectionInput.value,
+                concept: conceptInput.value,
+                style: styleSelect.value,
+                excludeKeywords: excludeKeywordsInput.value,
+                variations: parseInt(variationsInput.value, 10),
+                tagsCount: parseInt(tagsCountInput.value, 10),
+                platforms: getSelectedCheckboxes('platforms-container'),
+                languages: getSelectedCheckboxes('languages-container'),
+                prompts: generatedData.prompts,
+                seoData: generatedData.seoData,
+                images: generatedData.images
+            };
+            dataContent.innerHTML = `
+                <h3 class="text-sm font-semibold text-white">ข้อมูลโปรเจกต์</h3>
+                <pre class="bg-gray-800 p-4 rounded-lg text-xs overflow-auto">
+                    ${JSON.stringify(data, null, 2)}
+                </pre>
+            `;
+        };
+        
+        // Event Listeners
+        generatePromptsBtn.addEventListener('click', generatePromptsWithAI);
+        generateSeoBtn.addEventListener('click', generateSeoWithAI);
+        exportCsvBtn.addEventListener('click', exportCsv);
+        saveToFirestoreBtn.addEventListener('click', saveToFirestore);
+        quickQABtn.addEventListener('click', quickQA);
+        renderAllBtn.addEventListener('click', renderImages);
+        
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                tabButtons.forEach(btn => {
+                    btn.classList.remove('text-yellow-400', 'border-b-2', 'border-yellow-400');
+                    btn.classList.add('text-gray-400', 'hover:text-white');
+                });
+                button.classList.add('text-yellow-400', 'border-b-2', 'border-yellow-400');
+                button.classList.remove('text-gray-400', 'hover:text-white');
+                
+                tabPanes.forEach(pane => pane.classList.add('hidden'));
+                document.getElementById(`${button.dataset.tab}-content`).classList.remove('hidden');
+            });
+        });
+
+        document.querySelector('input[name="renderingMode"][value="Manual"]').addEventListener('change', () => {
+            document.getElementById('renderAllBtn').classList.add('hidden');
+        });
+        document.querySelector('input[name="renderingMode"][value="API"]').addEventListener('change', () => {
+            document.getElementById('renderAllBtn').classList.remove('hidden');
+        });
+        
+        aiCensorToggle.addEventListener('change', (e) => {
+            excludeKeywordsInput.readOnly = e.target.checked;
+            if (e.target.checked) {
+                excludeKeywordsInput.placeholder = "AI จะจัดการให้โดยอัตโนมัติ";
+                excludeKeywordsInput.value = "";
+            } else {
+                excludeKeywordsInput.placeholder = "";
+            }
+        });
+
+        referenceImagesInput.addEventListener('change', (e) => {
+            const files = e.target.files;
+            imagePreviewsContainer.innerHTML = '';
+            for (const file of files) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const img = document.createElement('img');
+                    img.src = event.target.result;
+                    img.className = 'h-16 w-16 object-cover rounded-lg shadow-md';
+                    imagePreviewsContainer.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+</body>
+</html>
+
